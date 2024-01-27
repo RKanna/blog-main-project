@@ -9,6 +9,7 @@ import { useUser } from "../Context/UserContext.jsx";
 import { collection, addDoc, getDoc, doc } from "firebase/firestore";
 import { appAuth, appDB } from "../firebase";
 import { FaGoogle } from "react-icons/fa";
+import ModalWindow from "../Modal/Modal.jsx";
 
 
 const Login = () => {
@@ -18,7 +19,8 @@ const Login = () => {
     const { user } = await signInWithGooglePopup();
     const userDocRef = await createUserDocumentFromAuth(user);
     setUser(user.email, user.displayName, user.uid);
-          getUserDisplayNameFromFirestore(uid);
+          // getUserDisplayNameFromFirestore(uid);
+          getUserProfileInfoFromFirestore(uid);
           navigate("/home");
   };
 
@@ -32,7 +34,7 @@ const Login = () => {
     userEmail,
     displayName,
     setDisplayNameNew,
-    getUserDisplayNameFromFirestore,
+    getUserProfileInfoFromFirestore,
   } = useUser();
   const { email, uid, password, confirmPassword } = formFields;
 
@@ -52,7 +54,7 @@ const Login = () => {
           const { uid, displayName, email } = user;
 
           setUser(email, displayName, uid);
-          getUserDisplayNameFromFirestore(uid);
+          getUserProfileInfoFromFirestore(uid);
           navigate("/home");
           console.log(user.email);
           console.log(user.displayName);
@@ -73,13 +75,20 @@ const Login = () => {
     setFormFields({ ...formFields, [name]: value });
   };
 
-  //Model Window Open and Close
 
-  const [openWindow, setOpenWindow] = useState(false);
 
-  const windowHandler = () => {
-    setOpenWindow(!openWindow);
+  const [isModalOpen, setIsModalOpen] = useState(true);
+
+  // Other code...
+
+  const openModal = () => {
+    setIsModalOpen(true);
   };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+  
 
   return (
     <section className="for-signup-bg">
@@ -109,18 +118,22 @@ const Login = () => {
         <h3>
           New user? <Link to="/signup">Signup</Link>
         </h3>
-        <button className="credential" onClick={windowHandler}>
-          View Test Credentials
-        </button>
-        {openWindow && (
+        
+        
           <div className="c-flex">
             <div className="banner">
-              <h3>Username : user@test.com</h3>
-              <h3>Password : tdx@444</h3>
+              <h4>Test Credentials</h4>
+              <h5>darien.milton@gmail.com</h5>
+              <h5>tdx@444</h5>
             </div>
           </div>
-        )}
+        
       </form>
+      {isModalOpen && (
+        <ModalWindow
+          onClose={closeModal}
+        />
+      )}
     </section>
   );
 };
